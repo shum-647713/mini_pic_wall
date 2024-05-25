@@ -18,3 +18,16 @@ class IsPictureOwner(permissions.BasePermission):
     def has_permission(self, request, view):
         accessed_picture = models.Picture.objects.get(pk=view.kwargs['pk'])
         return request.user == accessed_picture.owner
+
+
+class IsCollageOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        accessed_collage = models.Collage.objects.get(pk=view.kwargs['pk'])
+        return request.user == accessed_collage.owner
+
+
+class IsPictureAndCollageOwner(permissions.BasePermission):
+    def has_permission(self, request, view):
+        accessed_picture = models.Picture.objects.get(pk=view.kwargs['picture_pk'])
+        accessed_collage = models.Collage.objects.get(pk=view.kwargs['collage_pk'])
+        return (request.user == accessed_picture.owner) and (request.user == accessed_collage.owner)
