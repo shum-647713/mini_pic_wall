@@ -23,31 +23,31 @@ class HyperlinkedCollageSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    pictures = HyperlinkedPictureSerializer(many=True, read_only=True)
-    collages = HyperlinkedCollageSerializer(many=True, read_only=True)
-    upload_picture = serializers.HyperlinkedIdentityField(view_name='user-upload-picture', lookup_field='username')
-    create_collage = serializers.HyperlinkedIdentityField(view_name='user-create-collage', lookup_field='username')
+    pictures = serializers.HyperlinkedIdentityField(view_name='user-pictures', lookup_field='username')
+    collages = serializers.HyperlinkedIdentityField(view_name='user-collages', lookup_field='username')
 
     class Meta:
         model = User
-        fields = ['username', 'pictures', 'collages', 'upload_picture', 'create_collage']
+        fields = ['username', 'pictures', 'collages']
 
 
 class PictureSerializer(serializers.ModelSerializer):
     collages = HyperlinkedCollageSerializer(many=True, read_only=True)
     attach = serializers.HyperlinkedIdentityField(view_name='picture-attach')
+    detach = serializers.HyperlinkedIdentityField(view_name='picture-detach')
     owner = HyperlinkedUserSerializer(read_only=True)
 
     class Meta:
         model = models.Picture
-        fields = ['image', 'collages', 'attach', 'owner']
+        fields = ['image', 'collages', 'attach', 'detach', 'owner']
 
 
 class CollageSerializer(serializers.ModelSerializer):
     pictures = HyperlinkedPictureSerializer(many=True, read_only=True)
     attach = serializers.HyperlinkedIdentityField(view_name='collage-attach')
+    detach = serializers.HyperlinkedIdentityField(view_name='collage-detach')
     owner = HyperlinkedUserSerializer(read_only=True)
 
     class Meta:
         model = models.Collage
-        fields = ['name', 'pictures', 'attach', 'owner']
+        fields = ['name', 'pictures', 'attach', 'detach', 'owner']
