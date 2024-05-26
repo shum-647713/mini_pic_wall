@@ -3,6 +3,7 @@ from rest_framework.serializers import Serializer as EmptySerializer
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
+from django.contrib.auth import logout
 from django.contrib.auth.models import User
 from . import serializers, permissions, models
 
@@ -23,27 +24,54 @@ class UserViewSet(viewsets.ModelViewSet):
                 return User.objects.all().order_by('pk')
 
     def get_serializer_class(self):
-        match self.action, self.request.method:
-            case 'list', _:
+        match self.action:
+            case 'list':
                 return serializers.HyperlinkedUserSerializer
-            case 'retrieve', _:
+            case 'retrieve' | 'create':
                 return serializers.UserSerializer
-            case 'pictures', 'GET':
-                return serializers.HyperlinkedPictureSerializer
-            case 'pictures', 'POST':
-                return serializers.PictureSerializer
-            case 'collages', 'GET':
-                return serializers.HyperlinkedCollageSerializer
-            case 'collages', 'POST':
-                return serializers.CollageSerializer
+            case 'deactivate':
+                return serializers.UserPasswordSerializer
+            case 'change':
+                return serializers.UserUpdateSerializer
+            case 'pictures':
+                return {
+                    'GET': serializers.HyperlinkedPictureSerializer,
+                    'POST': serializers.PictureSerializer,
+                }.get(self.request.method, EmptySerializer)
+            case 'collages':
+                return {
+                    'GET': serializers.HyperlinkedCollageSerializer,
+                    'POST': serializers.CollageSerializer,
+                }.get(self.request.method, EmptySerializer)
             case _:
                 return EmptySerializer
 
     def get_permissions(self):
         permission_classes = [permissions.ReadOnly]
-        if self.action in ['pictures', 'collages']:
+        if self.action in ['deactivate', 'change', 'pictures', 'collages']:
             permission_classes = [permissions.IsUserThemselfOrReadOnly]
+        elif self.action == 'create':
+            permission_classes = []
         return [permission() for permission in permission_classes]
+
+    @action(detail=True, methods=['post'])
+    def deactivate(self, request, username=None):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user.is_active = False
+        user.save()
+        logout(request)
+        return Response("Successfully deactivated")
+
+    @action(detail=True, methods=['post'])
+    def change(self, request, username=None):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        headers = {'Location': reverse('user-detail', request=request, args=[user.username])}
+        return Response(serializer.data, headers=headers)
 
     @action(detail=True, methods=['get', 'post'])
     def pictures(self, request, username=None):
@@ -58,6 +86,9 @@ class UserViewSet(viewsets.ModelViewSet):
         return self.list(request)
 
     def perform_create(self, serializer):
+        if self.action == 'create':
+            serializer.save()
+            return
         serializer.save(owner=self.get_object())
 
 
