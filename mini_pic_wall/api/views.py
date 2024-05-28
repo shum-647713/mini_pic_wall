@@ -214,3 +214,21 @@ def detach(request, picture_pk, collage_pk, format=None):
     picture = models.Picture.objects.get(pk=picture_pk)
     collage.pictures.remove(picture)
     return Response("Successfully detached")
+
+
+@api_view(['GET'])
+def auth_list(request, format=None):
+    return Response({
+        'login': reverse('auth:login', request=request, format=format),
+        'logout': reverse('auth:logout', request=request, format=format),
+    })
+
+
+@api_view(['GET'])
+def api_root(request, format=None):
+    return Response({
+        'auth': reverse('auth-list', request=request, format=format),
+        'users': reverse('user-list', request=request, format=format),
+        'picture': reverse('picture-list', request=request, format=format),
+        'collage': reverse('collage-list', request=request, format=format),
+    })
