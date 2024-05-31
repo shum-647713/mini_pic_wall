@@ -122,7 +122,7 @@ class PictureViewSet(viewsets.ModelViewSet):
     def attach(self, request, pk=None):
         data = []
         picture = self.get_object()
-        collages = picture.owner.collages.all().order_by('pk')
+        collages = picture.owner.collages.exclude(pictures=picture).order_by('pk')
         collages = collages if self.paginator is None else self.paginate_queryset(collages)
         for collage in collages:
             collage_url = reverse('collage-detail', request=request, args=[collage.pk])
@@ -173,7 +173,7 @@ class CollageViewSet(viewsets.ModelViewSet):
     def attach(self, request, pk=None):
         data = []
         collage = self.get_object()
-        pictures = collage.owner.pictures.all().order_by('pk')
+        pictures = collage.owner.pictures.exclude(collages=collage).order_by('pk')
         pictures = pictures if self.paginator is None else self.paginate_queryset(pictures)
         for picture in pictures:
             picture_url = reverse('picture-detail', request=request, args=[picture.pk])

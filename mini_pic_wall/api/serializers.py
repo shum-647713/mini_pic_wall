@@ -80,7 +80,7 @@ class UserUpdateSerializer(serializers.Serializer):
 
 
 class PictureSerializer(serializers.ModelSerializer):
-    collages = HyperlinkedCollageSerializer(many=True, read_only=True)
+    collages = serializers.HyperlinkedIdentityField(view_name='picture-collages')
     attach = serializers.HyperlinkedIdentityField(view_name='picture-attach')
     detach = serializers.HyperlinkedIdentityField(view_name='picture-detach')
     owner = HyperlinkedUserSerializer(read_only=True)
@@ -91,7 +91,7 @@ class PictureSerializer(serializers.ModelSerializer):
 
 
 class CollageSerializer(serializers.ModelSerializer):
-    pictures = HyperlinkedPictureSerializer(many=True, read_only=True)
+    pictures = serializers.HyperlinkedIdentityField(view_name='collage-pictures')
     attach = serializers.HyperlinkedIdentityField(view_name='collage-attach')
     detach = serializers.HyperlinkedIdentityField(view_name='collage-detach')
     owner = HyperlinkedUserSerializer(read_only=True)
