@@ -67,7 +67,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['post'])
     def change(self, request, username=None):
         user = self.get_object()
-        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer = self.get_serializer(user, data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
         headers = {'Location': reverse('user-detail', request=request, args=[user.username])}
