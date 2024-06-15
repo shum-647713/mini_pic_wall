@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             name='Picture',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('image', models.ImageField(max_length=255, upload_to=mini_pic_wall.api.models.hash_image_upload)),
+                ('image', models.ImageField(max_length=255, upload_to='images/')), # upload_to originally is mini_pic_wall.api.models.hash_image_upload
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='pictures', to=settings.AUTH_USER_MODEL)),
             ],
         ),
