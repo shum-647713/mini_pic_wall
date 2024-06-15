@@ -87,7 +87,8 @@ class PictureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Picture
-        fields = ['image', 'collages', 'attach', 'detach', 'owner']
+        fields = ['image', 'thumbnail', 'collages', 'attach', 'detach', 'owner']
+        extra_kwargs = {'thumbnail': {'read_only': True}}
 
 
 class CollageSerializer(serializers.ModelSerializer):
