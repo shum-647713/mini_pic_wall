@@ -61,12 +61,17 @@ create `.env` file with similar content:
 DEBUG=False
 SECRET_KEY=django-insecure-key
 ALLOWED_HOSTS=*
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=name
-DB_USER=user
-DB_PASSWORD=password
-DB_HOST=db
-DB_PORT=5432
+
+DJANGO_DB_ENGINE=django.db.backends.postgresql
+DJANGO_DB_NAME=database_name
+DJANGO_DB_USER=username
+DJANGO_DB_PASSWORD=password
+DJANGO_DB_HOST=postgres
+DJANGO_DB_PORT=5432
+
+POSTGRES_DB=database_name
+POSTGRES_USER=username
+POSTGRES_PASSWORD=password
 ```
 
 to build and run in production:
