@@ -3,7 +3,7 @@ from rest_framework.serializers import Serializer as EmptySerializer
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
-from django.contrib.auth import logout
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from . import serializers, permissions, models
 
@@ -87,7 +87,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         if self.action == 'create':
-            serializer.save()
+            user = serializer.save()
+            login(self.request, user)
             return
         serializer.save(owner=self.get_object())
 
