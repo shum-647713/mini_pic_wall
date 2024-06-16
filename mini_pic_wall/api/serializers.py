@@ -12,9 +12,10 @@ class HyperlinkedUserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class HyperlinkedPictureSerializer(serializers.HyperlinkedModelSerializer):
+    thumbnail = serializers.ImageField(source='image.thumbnail')
     class Meta:
         model = models.Picture
-        fields = ['url', 'image']
+        fields = ['url', 'thumbnail']
 
 
 class HyperlinkedCollageSerializer(serializers.HyperlinkedModelSerializer):
@@ -80,6 +81,8 @@ class UserUpdateSerializer(serializers.Serializer):
 
 
 class PictureSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField(source='image.uploaded_image')
+    thumbnail = serializers.ImageField(source='image.thumbnail', read_only=True)
     collages = serializers.HyperlinkedIdentityField(view_name='picture-collages')
     attach = serializers.HyperlinkedIdentityField(view_name='picture-attach')
     detach = serializers.HyperlinkedIdentityField(view_name='picture-detach')
@@ -88,7 +91,11 @@ class PictureSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Picture
         fields = ['image', 'thumbnail', 'collages', 'attach', 'detach', 'owner']
-        extra_kwargs = {'thumbnail': {'read_only': True}}
+
+    def create(self, validated_data):
+        uploaded_image = validated_data.pop('image')['uploaded_image']
+        image = models.Image.objects.create(uploaded_image=uploaded_image)
+        return models.Picture.objects.create(image=image, **validated_data)
 
 
 class CollageSerializer(serializers.ModelSerializer):

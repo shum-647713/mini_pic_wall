@@ -3,6 +3,6 @@ from . import models
 
 
 @shared_task(ignore_result=True)
-def make_picture_thumbnail(picture_pk):
-    picture = models.Picture.objects.get(pk=picture_pk)
-    picture.make_thumbnail_now()
+def make_image_thumbnail(image_pk):
+    image = models.Image.objects.get(pk=image_pk)
+    image.make_thumbnail_now()
