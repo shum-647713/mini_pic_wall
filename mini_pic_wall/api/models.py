@@ -61,11 +61,12 @@ class Image(models.Model):
 
 
 class Picture(models.Model):
+    name = models.CharField(max_length=255)
     image = models.ForeignKey(Image, related_name='pictures', on_delete=models.CASCADE)
     owner = models.ForeignKey('auth.User', related_name='pictures', on_delete=models.CASCADE)
 
     def __str__(self):
-        return str(self.image)
+        return self.name
 
 
 class Collage(models.Model):

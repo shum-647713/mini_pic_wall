@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='picture',
             name='image',
-            field=models.ImageField(storage=mini_pic_wall.api.models.Sha256NameStorage(), upload_to='images/'),
+            field=models.ImageField(upload_to='images/'), # originally had storage=mini_pic_wall.api.models.Sha256NameStorage()
         ),
     ]

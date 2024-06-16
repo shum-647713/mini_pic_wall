@@ -15,7 +15,7 @@ class HyperlinkedPictureSerializer(serializers.HyperlinkedModelSerializer):
     thumbnail = serializers.ImageField(source='image.thumbnail')
     class Meta:
         model = models.Picture
-        fields = ['url', 'thumbnail']
+        fields = ['url', 'name', 'thumbnail']
 
 
 class HyperlinkedCollageSerializer(serializers.HyperlinkedModelSerializer):
@@ -90,7 +90,7 @@ class PictureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Picture
-        fields = ['image', 'thumbnail', 'collages', 'attach', 'detach', 'owner']
+        fields = ['name', 'image', 'thumbnail', 'collages', 'attach', 'detach', 'owner']
 
     def create(self, validated_data):
         uploaded_image = validated_data.pop('image')['uploaded_image']

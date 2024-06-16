@@ -3,6 +3,7 @@ from rest_framework.serializers import Serializer as EmptySerializer
 from rest_framework.reverse import reverse
 from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.settings import api_settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from . import serializers, permissions, models
@@ -85,17 +86,27 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.create(request)
         return self.list(request)
 
-    def perform_create(self, serializer):
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
         if self.action == 'create':
             user = serializer.save()
             login(self.request, user)
-            return
-        serializer.save(owner=self.get_object())
+
+            url = reverse('user-detail', request=self.request, args=[user.username])
+        else:
+            instance = serializer.save(owner=self.get_object())
+
+            if self.action == 'pictures':
+                url = reverse('picture-detail', request=self.request, args=[instance.pk])
+            elif self.action == 'collages':
+                url = reverse('collage-detail', request=self.request, args=[instance.pk])
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers={'Location': url})
 
 
 class PictureViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.ReadOnly]
-
     def get_object(self):
         return models.Picture.objects.get(pk=self.kwargs['pk'])
 
@@ -114,6 +125,12 @@ class PictureViewSet(viewsets.ModelViewSet):
                 return serializers.HyperlinkedCollageSerializer
             case _:
                 return EmptySerializer
+
+    def get_permissions(self):
+        permission_classes = [permissions.ReadOnly]
+        if self.action == 'destroy':
+            permission_classes = [permissions.IsPictureOwner]
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['get'])
     def collages(self, request, pk=None):
@@ -145,8 +162,6 @@ class PictureViewSet(viewsets.ModelViewSet):
 
 
 class CollageViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.ReadOnly]
-
     def get_object(self):
         return models.Collage.objects.get(pk=self.kwargs['pk'])
 
@@ -165,6 +180,12 @@ class CollageViewSet(viewsets.ModelViewSet):
                 return serializers.HyperlinkedPictureSerializer
             case _:
                 return EmptySerializer
+
+    def get_permissions(self):
+        permission_classes = [permissions.ReadOnly]
+        if self.action == 'destroy':
+            permission_classes = [permissions.IsCollageOwner]
+        return [permission() for permission in permission_classes]
 
     @action(detail=True, methods=['get'])
     def pictures(self, request, pk=None):

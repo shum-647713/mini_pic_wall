@@ -21,6 +21,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='picture',
             name='thumbnail',
-            field=models.ImageField(blank=True, storage=mini_pic_wall.api.models.Sha256NameStorage(), upload_to='thumbnails/'),
+            field=models.ImageField(blank=True, upload_to='thumbnails/'), # originally had storage=mini_pic_wall.api.models.Sha256NameStorage()
         ),
     ]
