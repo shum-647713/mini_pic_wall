@@ -200,7 +200,7 @@ class CollageViewSet(viewsets.ModelViewSet):
         for picture in pictures:
             picture_url = reverse('picture-detail', request=request, args=[picture.pk])
             attach_url = reverse('collage-attach-picture', request=request, args=[collage.pk, picture.pk])
-            data.append({'url': picture_url, 'attach': attach_url})
+            data.append({'url': picture_url, 'name': picture.name, 'thumbnail': picture.image.thumbnail.url, 'attach': attach_url})
         return Response(data) if self.paginator is None else self.get_paginated_response(data)
 
     @action(detail=True, methods=['get'])
@@ -212,7 +212,7 @@ class CollageViewSet(viewsets.ModelViewSet):
         for picture in pictures:
             picture_url = reverse('picture-detail', request=request, args=[picture.pk])
             detach_url = reverse('collage-detach-picture', request=request, args=[collage.pk, picture.pk])
-            data.append({'url': picture_url, 'detach': detach_url})
+            data.append({'url': picture_url, 'name': picture.name, 'thumbnail': picture.image.thumbnail.url, 'detach': detach_url})
         return Response(data) if self.paginator is None else self.get_paginated_response(data)
 
 

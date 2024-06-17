@@ -1,4 +1,4 @@
-FROM python:3.12-alpine
+FROM python:3.12-bookworm
 
 ENV HOME=/home/app
 RUN mkdir -p $HOME
@@ -14,6 +14,8 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY manage.py .
-COPY entrypoint.sh .
+COPY mini_pic_wall ./mini_pic_wall
 
-ENTRYPOINT ["/home/app/entrypoint.sh"]
+RUN useradd --system --home-dir $HOME app
+RUN chown --recursive app $HOME
+USER app

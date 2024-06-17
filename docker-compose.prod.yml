@@ -8,32 +8,37 @@ services:
       - media_files:/home/app/media
     ports:
       - 80:80
+    depends_on:
+      - web
 
   web:
     build:
       context: .
-      dockerfile: web.Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
-    restart: unless-stopped
-    env_file: "dev.env"
+      dockerfile: web.prod.Dockerfile
+    command: gunicorn --bind 0.0.0.0:8000 mini_pic_wall.wsgi
+    env_file: "prod.env"
     volumes:
-      - ./mini_pic_wall:/home/app/mini_pic_wall
       - static_files:/home/app/static
       - media_files:/home/app/media
+    depends_on:
+      - postgres
+      - celery
 
   celery:
     build:
       context: .
-      dockerfile: web.Dockerfile
+      dockerfile: web.prod.Dockerfile
     command: celery --app=mini_pic_wall worker
-    env_file: "dev.env"
+    env_file: "prod.env"
     volumes:
-      - ./mini_pic_wall:/home/app/mini_pic_wall
       - media_files:/home/app/media
+    depends_on:
+      - postgres
+      - redis
 
   postgres:
     image: postgres:16-alpine
-    env_file: "dev.env"
+    env_file: "prod.env"
     volumes:
       - postgres_data:/var/lib/postgresql/data/
 
