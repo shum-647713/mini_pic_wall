@@ -18,8 +18,20 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from . import views
+
+
+api_urls = [
+    path('users/', include('users.urls')),
+    path('pictures/', include('pictures.urls')),
+    path('collages/', include('collages.urls')),
+    path('', views.api_root, name='api-root'),
+]
 
 urlpatterns = [
+    path('api/', include(api_urls)),
+    path('auth/', include('rest_framework.urls', namespace='auth')),
+    path('auth/', views.auth_root, name='auth-root'),
     path('admin/', admin.site.urls),
-    path('api/', include('mini_pic_wall.api.urls')),
+    path('', views.root, name='root'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

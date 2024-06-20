@@ -1,7 +1,6 @@
 services:
   nginx:
     build:
-      context: .
       dockerfile: nginx.Dockerfile
     volumes:
       - static_files:/home/app/static
@@ -13,8 +12,8 @@ services:
 
   web:
     build:
-      context: .
-      dockerfile: web.prod.Dockerfile
+      context: mini_pic_wall
+      dockerfile: prod.Dockerfile
     command: gunicorn --bind 0.0.0.0:8000 mini_pic_wall.wsgi
     env_file: "prod.env"
     volumes:
@@ -26,8 +25,8 @@ services:
 
   celery:
     build:
-      context: .
-      dockerfile: web.prod.Dockerfile
+      context: mini_pic_wall
+      dockerfile: prod.Dockerfile
     command: celery --app=mini_pic_wall worker
     env_file: "prod.env"
     volumes:

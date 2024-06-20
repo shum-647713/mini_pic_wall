@@ -1,7 +1,6 @@
 services:
   nginx:
     build:
-      context: .
       dockerfile: nginx.Dockerfile
     volumes:
       - static_files:/home/app/static
@@ -10,25 +9,20 @@ services:
       - 80:80
 
   web:
-    build:
-      context: .
-      dockerfile: web.Dockerfile
+    build: mini_pic_wall
     command: python manage.py runserver 0.0.0.0:8000
-    restart: unless-stopped
     env_file: "dev.env"
     volumes:
-      - ./mini_pic_wall:/home/app/mini_pic_wall
+      - ./mini_pic_wall/:/home/app/
       - static_files:/home/app/static
       - media_files:/home/app/media
 
   celery:
-    build:
-      context: .
-      dockerfile: web.Dockerfile
+    build: mini_pic_wall
     command: celery --app=mini_pic_wall worker
     env_file: "dev.env"
     volumes:
-      - ./mini_pic_wall:/home/app/mini_pic_wall
+      - ./mini_pic_wall:/home/app/
       - media_files:/home/app/media
 
   postgres:

@@ -14,7 +14,11 @@ COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY manage.py .
+COPY optimized_serializers.py .
 COPY mini_pic_wall ./mini_pic_wall
+COPY users ./users
+COPY pictures ./pictures
+COPY collages ./collages
 
 RUN useradd --system --home-dir $HOME app
 RUN chown --recursive app $HOME

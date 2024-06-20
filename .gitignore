@@ -1,5 +1,7 @@
-env
-__pycache__
-db.sqlite3
-images
 prod.env
+__pycache__
+env
+db.sqlite3
+static
+media
+images

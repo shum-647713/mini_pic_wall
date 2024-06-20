@@ -17,11 +17,11 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-key')
 
-DEBUG = os.environ.get('DEBUG').lower() in ['1', 'true']
+DEBUG = os.environ.get('DEBUG', '').lower() in ['1', 'true']
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(' ')
 
 
 REST_FRAMEWORK = {
@@ -43,7 +43,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'mini_pic_wall.api',
+    'users',
+    'pictures',
+    'collages',
 ]
 
 MIDDLEWARE = [
