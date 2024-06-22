@@ -1,6 +1,6 @@
 # mini_pic_wall
 
-mini_pic_wall is a small project that demonstrates an example of the architecture and API of a picture posting site
+mini_pic_wall is a small project that demonstrates an example of a picture posting site API using **Django**, **Django Rest Framework**, **Celery** (with **Redis** as broker), **Docker**, **Docker Compose**, **PostgreSQL**, **Nginx**
 
 # Setup
 
@@ -21,7 +21,7 @@ to start server for development:
 ```
 sudo docker compose up -d --build
 ```
-if builder fails to download images you may need to do that manually with `docker pull`
+if builder fails to download images you may need to do that manually using `docker pull`
 
 to check if server is running, try to access http://127.0.0.1/api/
 
@@ -29,7 +29,7 @@ to check if server is running, try to access http://127.0.0.1/api/
 
 requirements: docker compose (tested with docker desktop)
 
-create `.env` file with similar content:
+create `prod.env` file with similar content:
 ```
 DEBUG=false
 SECRET_KEY=django-insecure-key
@@ -55,7 +55,7 @@ sudo docker compose -f docker-compose.prod.yml up -d --build
 sudo docker compose -f docker-compose.prod.yml --env-file prod.env exec web python manage.py migrate
 sudo docker compose -f docker-compose.prod.yml exec web python manage.py collectstatic
 ```
-if builder fails to download images you may need to do that manually with `docker pull`
+if builder fails to download images you may need to do that manually using `docker pull`
 
 to check if server is running, try to access http://127.0.0.1/api/
 
@@ -82,10 +82,6 @@ Example of pagination: `{"count": 32, "next": "/link/to/next/page/", "previous":
 | /api/pictures/\<id\>/               | GET    | `{"name": "picture_name", "image": "/media/images/hash.png", "thumbnail": "/media/thumbnails/hash.png", "collages": "/api/pictures/1/collages/", "attach": "/api/pictures/1/attach/", "detach": "/api/pictures/1/detach/", "owner": {"url": "/api/users/user/", "username": "user"}}` |
 | /api/pictures/\<id\>/               | DELETE |                                                                                                                                                                                                                                                                                       |
 | /api/pictures/\<id\>/collages/      | GET    | `[{"url": "/api/collages/1/", "name": "collage_name"}]`                                                                                                                                                                                                                               |
-| /api/pictures/\<id\>/attach/        | GET    | `[{"url": "/api/collages/1/", "name": "collage_name", "attach": "/api/pictures/1/attach/1/"}]`                                                                                                                                                                                        |
-| /api/pictures/\<id\>/attach/\<id\>/ | POST   |                                                                                                                                                                                                                                                                                       |
-| /api/pictures/\<id\>/detach/        | GET    | `[{"url": "/api/collages/1/", "name": "collage_name", "detach": "/api/pictures/1/detach/1/"}]`                                                                                                                                                                                        |
-| /api/pictures/\<id\>/detach/\<id\>/ | POST   |                                                                                                                                                                                                                                                                                       |
 | /api/collages/                      | GET    | `[{"url": "/api/collages/1/", "name": "collage_name"}]`                                                                                                                                                                                                                               |
 | /api/collages/\<id\>/               | GET    | `{"name": "collage_name", "pictures": "/api/collages/1/pictures/", "attach": "/api/collages/1/attach/", "detach": "/api/collages/1/detach/", "owner": {"url": "/api/users/user/", "username": "user"}}`                                                                               |
 | /api/collages/\<id\>/               | DELETE |                                                                                                                                                                                                                                                                                       |

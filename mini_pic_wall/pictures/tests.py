@@ -90,3 +90,17 @@ class PictureViewAPITestCase(test.APITestCase):
         self.assertEqual(response.data['results'][1]['url'],
                          reverse('collage-detail', request=request, args=[collage2.pk]))
         self.assertEqual(response.data['results'][1]['name'], collage2.name)
+
+    def test_delete_picture(self):
+        user = User.objects.create(username='user_name')
+        picture = make_picture(owner=user)
+        image = picture.image
+        image.thumbnail.name = image.uploaded_image.name
+        image.save()
+
+        url = reverse('picture-detail', args=[picture.pk])
+        self.client.force_authenticate(user=user)
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Picture.objects.count(), 0)

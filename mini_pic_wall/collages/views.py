@@ -15,10 +15,15 @@ from .models import Collage
 
 class CollageViewSet(ModelViewSet):
     def get_object(self):
-        assert 'owner' in self.get_serializer_class().Meta.fields
-        collage = Collage.objects.select_related('owner').get(pk=self.kwargs['pk'])
-        self.check_object_permissions(self.request, collage)
-        return collage
+        if self.action == 'retrieve':
+            assert 'owner' in self.get_serializer_class().Meta.fields
+            collage = Collage.objects.select_related('owner').get(pk=self.kwargs['pk'])
+            # self.check_object_permissions(self.request, collage)
+            return collage
+        else:
+            collage = Collage.objects.get(pk=self.kwargs['pk'])
+            self.check_object_permissions(self.request, collage)
+            return collage
 
     def get_queryset(self):
         match self.action:

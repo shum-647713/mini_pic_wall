@@ -11,11 +11,16 @@ from .models import Picture
 
 class PictureViewSet(ModelViewSet):
     def get_object(self):
-        assert 'thumbnail' in self.get_serializer_class().Meta.fields
-        assert 'owner' in self.get_serializer_class().Meta.fields
-        picture = Picture.objects.select_related('image', 'owner').get(pk=self.kwargs['pk'])
-        self.check_object_permissions(self.request, picture)
-        return picture
+        if self.action == 'retrieve':
+            assert 'thumbnail' in self.get_serializer_class().Meta.fields
+            assert 'owner' in self.get_serializer_class().Meta.fields
+            picture = Picture.objects.select_related('image', 'owner').get(pk=self.kwargs['pk'])
+            # self.check_object_permissions(self.request, picture)
+            return picture
+        else:
+            picture = Picture.objects.get(pk=self.kwargs['pk'])
+            self.check_object_permissions(self.request, picture)
+            return picture
 
     def get_queryset(self):
         match self.action:

@@ -48,6 +48,17 @@ class CollageViewAPITestCase(test.APITestCase):
                          reverse('user-detail', request=request, args=[user.username]))
         self.assertEqual(response.data['owner']['username'], user.username)
 
+    def test_delete_collage(self):
+        user = User.objects.create(username='user_name')
+        collage = Collage.objects.create(name='name of collage', owner=user)
+
+        url = reverse('collage-detail', args=[collage.pk])
+        self.client.force_authenticate(user=user)
+        response = self.client.delete(url)
+
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(Collage.objects.count(), 0)
+
     def test_list_collage_pictures(self):
         user = User.objects.create(username='user_name')
         collage = Collage.objects.create(name='name of collage', owner=user)
