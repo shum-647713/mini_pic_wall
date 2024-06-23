@@ -1,17 +1,21 @@
+from django.db.models import F
 from rest_framework import serializers
-from optimized_serializers import HyperlinkedModelSerializer
 from users.serializers import HyperlinkedUserSerializer
 from . import models
 
 
-class HyperlinkedPictureSerializer(HyperlinkedModelSerializer):
-    thumbnail = serializers.ImageField(source='image.thumbnail')
+class HyperlinkedPictureSerializer(serializers.HyperlinkedModelSerializer):
+    thumbnail = serializers.ImageField(source='image_thumbnail')
 
     class Meta:
         model = models.Picture
         fields = ['url', 'name', 'thumbnail']
-        select_related = ['image']
-        load_only = ['pk', 'name', 'image__thumbnail']
+
+    def __init__(self, *args, **kwargs):
+        try: kwargs['data'] = kwargs['data'].select_related('image').values(
+                'pk', 'name', image_thumbnail=F('image__thumbnail'))
+        except: pass
+        return super().__init__(*args, **kwargs)
 
 
 class PictureSerializer(serializers.ModelSerializer):

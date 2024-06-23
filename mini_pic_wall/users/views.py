@@ -1,6 +1,4 @@
-from django.db.models import Subquery
 from django.contrib.auth import login, logout
-from django.contrib.auth.models import User
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.serializers import Serializer as EmptySerializer
 from rest_framework.response import Response
@@ -8,9 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.reverse import reverse
 import pictures.serializers
 import collages.serializers
-from pictures.models import Picture
-from collages.models import Collage
 from . import serializers, permissions
+from .models import User
 
 
 class UserViewSet(ModelViewSet):
@@ -26,13 +23,11 @@ class UserViewSet(ModelViewSet):
     def get_queryset(self):
         match self.action:
             case 'pictures':
-                user = User.objects.filter(username=self.kwargs['username'])
-                return Picture.objects.filter(owner=Subquery(user.values('pk')))
+                return User.objects.get_pictures_by_username(self.kwargs['username'])
             case 'collages':
-                user = User.objects.filter(username=self.kwargs['username'])
-                return Collage.objects.filter(owner=Subquery(user.values('pk')))
+                return User.objects.get_collages_by_username(self.kwargs['username'])
             case _:
-                return User.objects.order_by('pk')
+                return User.objects.all()
 
     def get_serializer_class(self):
         match self.action:

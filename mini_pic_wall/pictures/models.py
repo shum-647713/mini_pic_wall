@@ -76,5 +76,9 @@ class Picture(models.Model):
         default_related_name = '%(model_name)ss'
         ordering = ['pk']
 
+    @property
+    def image_thumbnail(self):
+        return self.image.thumbnail
+
     def __str__(self):
         return self.name

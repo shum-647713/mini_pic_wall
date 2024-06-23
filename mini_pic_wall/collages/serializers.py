@@ -1,17 +1,20 @@
 from django.urls import reverse as django_reverse
 from rest_framework import serializers
 from rest_framework.reverse import reverse as drf_reverse
-from optimized_serializers import HyperlinkedModelSerializer
 from users.serializers import HyperlinkedUserSerializer
 from pictures.serializers import HyperlinkedPictureSerializer
 from . import models
 
 
-class HyperlinkedCollageSerializer(HyperlinkedModelSerializer):
+class HyperlinkedCollageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Collage
         fields = ['url', 'name']
-        load_only = ['pk', 'name']
+
+    def __init__(self, *args, **kwargs):
+        try: kwargs['data'] = kwargs['data'].values('pk', 'name')
+        except: pass
+        return super().__init__(*args, **kwargs)
 
 
 class CollageSerializer(serializers.ModelSerializer):

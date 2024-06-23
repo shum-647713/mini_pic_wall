@@ -6,13 +6,13 @@ from rest_framework.reverse import reverse
 from rest_framework import test
 from collages.models import Collage
 from .models import Image, Picture
-import PIL
+from PIL import Image as PilImage
 import io
 
 
 def make_image_bytes():
     image_bytes = io.BytesIO()
-    image = PIL.Image.new('RGBA', size=(16, 16), color=(95, 0, 0))
+    image = PilImage.new('RGBA', size=(16, 16), color=(95, 0, 0))
     image.save(image_bytes, 'png')
     image_bytes.name = 'test.png'
     image_bytes.seek(0)

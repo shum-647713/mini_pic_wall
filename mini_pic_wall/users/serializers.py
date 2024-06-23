@@ -1,15 +1,18 @@
 from string import ascii_letters, digits
-from django.contrib.auth.models import User
 from rest_framework import serializers
-from optimized_serializers import HyperlinkedModelSerializer
+from .models import User
 
 
-class HyperlinkedUserSerializer(HyperlinkedModelSerializer):
+class HyperlinkedUserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ['url', 'username']
-        load_only = ['pk', 'username']
         extra_kwargs = {'url': {'lookup_field': 'username'}}
+
+    def __init__(self, *args, **kwargs):
+        try: kwargs['data'] = kwargs['data'].values('pk', 'username')
+        except: pass
+        return super().__init__(*args, **kwargs)
 
 
 class UserSerializer(serializers.ModelSerializer):
